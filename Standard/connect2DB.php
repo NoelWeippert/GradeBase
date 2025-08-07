@@ -1,14 +1,22 @@
 <?php
-$host_name = 'db5018359339.hosting-data.io';
-$database = 'dbs14534822';
-$user_name = 'dbu1005693';
-$password = '<Geben Sie hier Ihr Passwort ein.>';
 
-$link = new mysqli($host_name, $user_name, $password, $database);
+$key = 'KEY_EINFÜGEN';
+$ciphertext = 'B8Aa/JhRflfrmEoBQAuu3tu111RR5mMvnG1d8SqOJSlDeCDHEsq567tjCsbI/unYkFpTxZ86waCzuSX0UvoSZXe0H4RUy/gTsMQn/pQ5AubHt2p3QrS0zAGDG8lTY65q';
+$iv = '6191619161916191';
+
+$decrypted = openssl_decrypt($ciphertext, 'aes-256-cbc', $key, 0, $iv);
+$params = json_decode($decrypted, true);
+
+$passwort = $params['mysql'][0];
+$benutzer = $params['mysql'][1];
+$host = $params['mysql'][2];
+$datenbank = $params['mysql'][3];
+
+$link = new mysqli($host, $benutzer, $passwort, $datenbank);
 
 if ($link->connect_error) {
-    die('<p>Verbindung zum MySQL Server fehlgeschlagen: ' . $link->connect_error . '</p>');
+    return false;
 } else {
-    echo '<p>Verbindung zum MySQL Server erfolgreich aufgebaut.</p>';
+    return true;
 }
 ?>
