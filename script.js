@@ -1,3 +1,28 @@
+function getName() {
+  let xmlhttp = new XMLHttpRequest();
+  xmlhttp.onreadystatechange = function () {
+    if (this.readyState == 4) {
+      if (this.status == 200) {
+        try {
+          let data = JSON.parse(this.responseText);
+          if (data.name) {
+            document.getElementById("name").innerHTML = data.name;
+          }
+          if (data.klasse) {
+            document.getElementById("klasse").innerHTML = data.klasse;
+          }
+        } catch (e) {
+          console.error("Antwort ist kein JSON:", this.responseText);
+        }
+      } else {
+        window.location.href = "../LogReg/index.html";
+      }
+    }
+  };
+  xmlhttp.open("GET", "../../Benutzerverwaltung/getUserName.php");
+  xmlhttp.send();
+}
+
 function loadBasicHeadHTML(nextPage) {
   document.getElementById("basicHead").innerHTML = `
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -6,14 +31,16 @@ function loadBasicHeadHTML(nextPage) {
             <link rel="icon" type="image/png" href="http://gradebase.de/Bilder/Logo.png">
             <title>GradeBase</title>
     `;
-  if (nextPage == 1) {
+  if (nextPage === 1) {
     loadBasicBodyHTML();
-    return;
+    getName();
+  } else {
+    loadBasicLogRegBodyHTML();
   }
-  loadBasicLogRegBodyHTML();
 }
 
 function loadBasicBodyHTML() {
+  document.getElementById("basicBody").innerHTML = ``;
   document.getElementById("basicBody").innerHTML = `
             <style>
                 :root {
@@ -73,11 +100,11 @@ function loadBasicBodyHTML() {
             <div class="topBarDiv">
                 <img src="http://gradebase.de/Bilder/Logo.png" class="imageLogo">
                 <span class="headline">GradeBase</span>
-                <div class="profilDiv">
+                <div class="profilDiv" onclick="window.location.href = '../Settings/index.html'">
                     <img src="http://gradebase.de/Bilder/userIcon.png" style="width: 6em;">
                     <div class="profilInformationDiv">
-                        <span>Name: <span>Noel Weippert</span></span>
-                        <span>Klasse: <span>10FI4</span></span>
+                        <span id="name">Name: <span>Noel Weippert</span></span>
+                        <span id="klasse">Klasse: <span>10FI4</span></span>
                     </div>
                 </div>
             </div>
@@ -134,14 +161,4 @@ function loadBasicLogRegBodyHTML() {
             <hr style="margin-left: 3em; margin-right: 3em;">
             <div id="mainDiv"></div>
     `;
-}
-
-function connect() {
-  const xhttp = new XMLHttpRequest();
-  xhttp.onload = function () {
-    console.log(this.responseText);
-  };
-  const url = `../Standard/connect2DB.php`;
-  xhttp.open("GET", url);
-  xhttp.send();
 }
